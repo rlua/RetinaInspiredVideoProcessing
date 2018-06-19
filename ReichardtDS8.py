@@ -1,5 +1,6 @@
 import numpy as np
 
+def Reichardt8(video):
     '''
        Returns a tuple of Reichardt-Hassenstein correlators in 8 directions
     '''
