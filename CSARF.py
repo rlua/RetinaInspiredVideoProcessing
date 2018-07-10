@@ -13,8 +13,9 @@ def gkern(kernlen=7, std=3, max =1):
 
 def kernels(size=5):
     m = gkern(kernlen=size, std = 5, max=0.5)
-    m1 = gkern(kernlen=size, std = 1, max=1.88)
-    #m1 = gkern(kernlen=size, std = 1, max=2)
+    #m1 = gkern(kernlen=size, std = 1, max=3.35) #sum of the kernel:  0.06041046812276252 for 7x7
+    #m1 = gkern(kernlen=size, std = 1, max=1.88) #sum of the kernel:  0.04573110456660656 for 5x5
+    m1 = gkern(kernlen=size, std = 1, max=2)
     #m1 = gkern(kernlen=size, std = 3, max=2)
     x = (m1 - m)
     x = x.reshape(1,size,size)
@@ -29,7 +30,19 @@ def kernels(size=5):
 
 _size=5
 _pad=int((_size-1)/2)
-center_surround = torch.nn.Conv3d(1,1, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False)
+_in_channels=3
+_out_channels=3
+#center_surround = torch.nn.Conv3d(1,1, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False)
+#For RGB input
+center_surround = torch.nn.Conv3d(_in_channels,_out_channels, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False)
 
-center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernels(size=_size)).view(1,_size,_size).repeat(1,1,1,1,1).float(),requires_grad=False)
+#center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernels(size=_size)).view(1,_size,_size).repeat(1,1,1,1,1).float(),requires_grad=False)
+#
+#center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernels(size=_size)).view(1,_size,_size).repeat(3,3,1,1,1).float(),requires_grad=False)
 
+#For RGB input
+kernel=np.concatenate((kernels(size=_size),np.zeros((1,_size,_size)),np.zeros((1,_size,_size)),\
+                       np.zeros((1,_size,_size)),kernels(size=_size),np.zeros((1,_size,_size)),\
+                       np.zeros((1,_size,_size)),np.zeros((1,_size,_size)),kernels(size=_size)),axis=0)
+center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernel).view(_in_channels,_out_channels,1,_size,_size).float(),requires_grad=False)
+print('center_surround.weight ',center_surround.weight)

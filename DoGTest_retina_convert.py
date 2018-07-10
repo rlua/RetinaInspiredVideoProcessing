@@ -132,12 +132,14 @@ def make_retina_output(args):
     """
     Produce pre-normalization retina output
     """
-    video = skvideo.io.vread(args.input_path, as_grey=True)
-    #video_rgb = skvideo.io.vread(args.input_path, as_grey=False)
-    video_rgb = skvideo.io.vread(args.input_path, as_grey=True) #Temporarily make this gray scale
+    #video = skvideo.io.vread(args.input_path, as_grey=True)
+    video = skvideo.io.vread(args.input_path, as_grey=False)
+    video_rgb = skvideo.io.vread(args.input_path, as_grey=False)
+    #video_rgb = skvideo.io.vread(args.input_path, as_grey=True) #Temporarily make this gray scale
 
     # convert to float from byte
-    video = (video.astype(np.float32)) + 1e-3
+    #video = (video.astype(np.float32)) + 1e-3
+    video = (video.astype(np.float32))
 
     print('skvideo.io.vread returned video with shape',video.shape)
     #print('skvideo.io.vread video type: ',type(video[0,0,0,0]),video[0,0,0,0])
@@ -186,10 +188,10 @@ def make_retina_output(args):
     # write retina output to file
     if args.out_path:
         #Default
-        #write_video(args.out_path, retina_output, frame_rate=args.frame_rate)
+        write_video(args.out_path, retina_output, frame_rate=args.frame_rate)
         #Side-by-side of Reichardt-treated video and original
         #write_video(args.out_path, np.concatenate((retina_output[:,:,:int(video_rgb.shape[2]/2)],video_rgb[:,:,:int(video_rgb.shape[2]/2)]),axis=2), frame_rate=args.frame_rate)
-        write_video(args.out_path, np.concatenate((retina_output[:,:,:],video_rgb[:,:,:]),axis=2), frame_rate=args.frame_rate)
+        #write_video(args.out_path, np.concatenate((retina_output[:,:,:],video_rgb[:,:,:]),axis=2), frame_rate=args.frame_rate)
 
     # compute local motion feature from EDR
     #v_map_p, v_map_n, h_map_p, h_map_n =\
