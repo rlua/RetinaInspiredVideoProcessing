@@ -161,7 +161,9 @@ def make_retina_output(args):
     #retina_output = np.concatenate((vp3, vp3, vm3), axis=(len(video.shape)-1)) 
 
     #Test DoG filter
-    retina_output=CSARF.center_surround(torch.autograd.Variable(torch.from_numpy(np.expand_dims(video.transpose(3,0,1,2),axis=0))))
+    retina_output = CSARF.center_surround(torch.autograd.Variable(torch.from_numpy(np.expand_dims(video.transpose(3,0,1,2),axis=0))))
+    noise = torch.randn(retina_output.size()).normal_()
+    retina_output += noise
     print('center_surround.weight torch size',CSARF.center_surround.weight.size())
     print('retina_output torch size',retina_output.size())
     retina_output=retina_output.data.numpy().transpose(0,2,3,4,1).squeeze(axis=0)
