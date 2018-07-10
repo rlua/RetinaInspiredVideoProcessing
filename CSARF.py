@@ -34,15 +34,18 @@ _in_channels=3
 _out_channels=3
 #center_surround = torch.nn.Conv3d(1,1, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False)
 #For RGB input
-center_surround = torch.nn.Conv3d(_in_channels,_out_channels, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False)
+#center_surround = torch.nn.Conv3d(_in_channels,_out_channels, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False)
+center_surround = torch.nn.Conv3d(_in_channels,_out_channels, kernel_size=(1,_size,_size), stride=1, padding=(0,_pad,_pad), bias=False,groups=_in_channels)
 
 #center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernels(size=_size)).view(1,_size,_size).repeat(1,1,1,1,1).float(),requires_grad=False)
-#
-#center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernels(size=_size)).view(1,_size,_size).repeat(3,3,1,1,1).float(),requires_grad=False)
 
-#For RGB input
-kernel=np.concatenate((kernels(size=_size),np.zeros((1,_size,_size)),np.zeros((1,_size,_size)),\
-                       np.zeros((1,_size,_size)),kernels(size=_size),np.zeros((1,_size,_size)),\
-                       np.zeros((1,_size,_size)),np.zeros((1,_size,_size)),kernels(size=_size)),axis=0)
-center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernel).view(_in_channels,_out_channels,1,_size,_size).float(),requires_grad=False)
+#For RGB input, explicit
+#kernel=np.concatenate((kernels(size=_size),np.zeros((1,_size,_size)),np.zeros((1,_size,_size)),\
+#                       np.zeros((1,_size,_size)),kernels(size=_size),np.zeros((1,_size,_size)),\
+#                       np.zeros((1,_size,_size)),np.zeros((1,_size,_size)),kernels(size=_size)),axis=0)
+#center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernel).view(_in_channels,_out_channels,1,_size,_size).float(),requires_grad=False)
+
+#For RGB input, using groups argument in Conv3d
+center_surround.weight = torch.nn.parameter.Parameter(torch.from_numpy(kernels(size=_size)).view(1,_size,_size).repeat(_out_channels,1,1,1,1).float(),requires_grad=False) #In conjunction with groups=3
+
 print('center_surround.weight ',center_surround.weight)
