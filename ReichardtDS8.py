@@ -19,7 +19,7 @@ def Reichardt_vertical_2channels_Vectorized(video,timeDelay=1):
     '''
 
     # normalize video pixel value to 0 ~ 1 (I don't think this normalizes to that range...)
-    video = (video.astype(np.float32)) + 1e-3
+    #video = (video.astype(np.float32)) + 1e-3
 
     vc_shift_vert_by1back=np.roll(video,1,axis=1)
     vc_shift_time_by1forw=np.roll(video,-1,axis=0)
@@ -46,8 +46,8 @@ def Reichardt_diagonal1_2channels_Vectorized(video,timeDelay=1):
     '''
 
     # normalize video pixel value to 0 ~ 1 (I don't think this normalizes to that range...)
-    video = (video.astype(np.float32)) + 1e-3
-
+    #video = (video.astype(np.float32)) + 1e-3
+    
     vc_shift_diag_by1back=np.roll(video,(1,1),axis=(1,2))
     vc_shift_time_by1forw=np.roll(video,-1,axis=0)
     vc_shift_diag_by1back_time_by1forw=np.roll(vc_shift_diag_by1back,-1,axis=0)
@@ -72,7 +72,7 @@ def Reichardt_horizontal_2channels_Vectorized(video,timeDelay=1):
     '''
 
     # normalize video pixel value to 0 ~ 1 (I don't think this normalizes to that range...)
-    video = (video.astype(np.float32)) + 1e-3
+    #video = (video.astype(np.float32)) + 1e-3
 
     vc_shift_horz_by1back=np.roll(video,1,axis=2)
     vc_shift_time_by1forw=np.roll(video,-1,axis=0)
@@ -98,7 +98,7 @@ def Reichardt_diagonal2_2channels_Vectorized(video,timeDelay=1):
     '''
 
     # normalize video pixel value to 0 ~ 1 (I don't think this normalizes to that range...)
-    video = (video.astype(np.float32)) + 1e-3
+    #video = (video.astype(np.float32)) + 1e-3
 
     vc_shift_diag_by1back=np.roll(video,(-1,1),axis=(1,2))
     vc_shift_time_by1forw=np.roll(video,-1,axis=0)
