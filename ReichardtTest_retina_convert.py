@@ -134,6 +134,11 @@ def make_retina_output(args):
     print('skvideo.io.vread returned video with shape',video.shape)
     #print('skvideo.io.vread video type: ',type(video[0,0,0,0]),video[0,0,0,0])
 
+    # 
+    video = (video.astype(np.float32))/255.0
+    #video = 2*video-1
+    #print(video)
+
     #RCL
     start = timer()
     #vp1, vm1 = Reichardt_vertical_2channels_Vectorized(video,timeDelay=1)
@@ -141,13 +146,21 @@ def make_retina_output(args):
     #vp2, vm2 = Reichardt_diagonal1_2channels_Vectorized(video,timeDelay=1)
     #vp4, vm4 = Reichardt_diagonal2_2channels_Vectorized(video,timeDelay=1)
     #
-    vp1, vm1, vp2, vm2, vp3, vm3, vp4, vm4 = Reichardt8(video)
+    #vp1, vm1, vp2, vm2, vp3, vm3, vp4, vm4 = Reichardt8(video)
+    #Use low pass and high pass filtering for time delay (with exponential moving average implementation, ema, like in EDR)
+    #vp1, vm1 = reichardt_filter_vertical(video,1,1,1) #alpha = 0.5 for hp and lp
+    #'tau_hp':50, # ms
+    #'tau_lp':20, # ms
+    #vp1, vm1 = reichardt_filter_vertical(video,50,20,1)
+    vp1, vm1, vp3, vm3 = reichardt_filter_vertical_horizontal(video,50,20,1)
     end = timer()
-    #print('Reichardt elapsed time: ', end - start)
+    print('Reichardt elapsed time: ', end - start)
 
     #Build what directions to show here
     #retina_output = np.concatenate((vp1, vp2, vp3), axis=len(video.shape)) 
-    retina_output = np.concatenate((vp3, vp3, vm3), axis=(len(video.shape)-1)) 
+    vzeros=np.zeros(vp1.shape)
+    retina_output = np.concatenate((vp1, vm1, vzeros), axis=(len(video.shape)-1)) 
+    #retina_output = np.concatenate((vp3, vm3, vzeros), axis=(len(video.shape)-1)) 
 
     # save retina output of video
     #retina_output = retina(video, args.alpha, args.mu_on, args.mu_off)
