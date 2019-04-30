@@ -1,5 +1,22 @@
 import numpy as np
 
+#Returns two-components, each component can take positive or negative values
+def Reichardt2(video):
+
+    v1 = Reichardt_vertical_SingleChannel_Vectorized(video) #Directions 1, -1
+    v3 = Reichardt_horizontal_SingleChannel_Vectorized(video) #Directions 3, -3
+
+    return [v1, v3]
+
+#Returns four components, each component can take positive or negative values
+def Reichardt4(video):
+    v1 = Reichardt_vertical_SingleChannel_Vectorized(video) #Directions 1, -1
+    v3 = Reichardt_horizontal_SingleChannel_Vectorized(video) #Directions 3, -3
+    v2 = Reichardt_diagonal1_SingleChannel_Vectorized(video) #Directions 2, -2
+    v4 = Reichardt_diagonal2_SingleChannel_Vectorized(video) #Directions 4, -4
+
+    return [v1, v2, v3, v4]
+
 def Reichardt8(video):
     '''
        Returns a tuple of Reichardt-Hassenstein correlators in 8 directions

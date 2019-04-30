@@ -10,7 +10,7 @@ import imageio
 from timeit import default_timer as timer
 
 #RCL
-from ReichardtDS8 import *
+#from ReichardtDS8 import *
 
 def rescale(matrix, scale_min=0, scale_max=255):
     """
@@ -55,6 +55,8 @@ def retina(video, alpha, mu_on, mu_off):
     return np.concatenate((off, on), axis=len(video.shape))
 
 #Don't call expand_dims
+#Don't convert to float and add 1e-3
+#Remove print statements
 def retina2(video, alpha, mu_on, mu_off):
     """
     video is a numpy array, where the first dimention is time T
@@ -65,7 +67,7 @@ def retina2(video, alpha, mu_on, mu_off):
     ema = np.zeros(video.shape, dtype=float)
 
     # normalize video pixel value to 0 ~ 1
-    video = (video.astype(np.float32)) + 1e-3
+    #video = (video.astype(np.float32)) + 1e-3
 
     # EMA filtering
     ema[0, :, :, :] = video[0, :, :, :]
@@ -75,16 +77,18 @@ def retina2(video, alpha, mu_on, mu_off):
             alpha * video[t, :, :, :]
 
     # compute relative change
+    #change = np.tanh(np.log(np.divide(video, ema + 1e-5)))
     change = np.tanh(np.log(np.divide(video, ema + 1e-5)))
 
-    print('change shape',change.shape)
+    #print('change shape',change.shape)
     # thresholding
     on = np.maximum(0, change - mu_on)
     off = np.maximum(0, - (change - mu_off))
 
-    print('on shape',on.shape)
-    print('off shape',off.shape)
-    return np.concatenate((off, on), axis=len(video.shape)-1)
+    #print('on shape',on.shape)
+    #print('off shape',off.shape)
+    #return np.concatenate((off, on), axis=len(video.shape)-1)
+    return off, on
 
 
 def compute_local_motion_feature(video):
@@ -131,42 +135,42 @@ def make_retina_output(args):
     video = skvideo.io.vread(args.input_path, as_grey=True)
     video_rgb = skvideo.io.vread(args.input_path, as_grey=False)
 
+    #For long videos from Caleb Kemere
+    video = video[:100]
+    video_rgb = video_rgb[:100]
+
     print('skvideo.io.vread returned video with shape',video.shape)
     #print('skvideo.io.vread video type: ',type(video[0,0,0,0]),video[0,0,0,0])
+    #print('skvideo.io.vread returned video_rgb with shape',video_rgb.shape)
 
     # 
-    video = (video.astype(np.float32))/255.0
+    #video = (video.astype(np.float32))/255.0
+    video = (video.astype(np.float32)) + 1e-3
     #video = 2*video-1
     #print(video)
 
-    #RCL
-    start = timer()
+    ##RCL
+    #start = timer()
     #vp1, vm1 = Reichardt_vertical_2channels_Vectorized(video,timeDelay=1)
     #vp3, vm3 = Reichardt_horizontal_2channels_Vectorized(video,timeDelay=1)
     #vp2, vm2 = Reichardt_diagonal1_2channels_Vectorized(video,timeDelay=1)
     #vp4, vm4 = Reichardt_diagonal2_2channels_Vectorized(video,timeDelay=1)
     #
-    vp1, vm1, vp2, vm2, vp3, vm3, vp4, vm4 = Reichardt8(video)
-    #Use low pass and high pass filtering for time delay (with exponential moving average implementation, ema, like in EDR)
-    #vp1, vm1 = reichardt_filter_vertical(video,1,1,1) #alpha = 0.5 for hp and lp
-    #'tau_hp':50, # ms
-    #'tau_lp':20, # ms
-    #vp1, vm1 = reichardt_filter_vertical(video,50,20,1)
-    #vp1, vm1, vp3, vm3 = reichardt_filter_vertical_horizontal(video,1,1,1)
-    end = timer()
-    print('Reichardt elapsed time: ', end - start)
+    #vp1, vm1, vp2, vm2, vp3, vm3, vp4, vm4 = Reichardt8(video)
+    #end = timer()
+    #print('Reichardt elapsed time: ', end - start)
 
     #Build what directions to show here
     #retina_output = np.concatenate((vp1, vp2, vp3), axis=len(video.shape)) 
-    vzeros=np.zeros(vp1.shape)
-    #retina_output = np.concatenate((vp1, vm1, vzeros), axis=(len(video.shape)-1)) 
-    #retina_output = np.concatenate((vp3, vm3, vzeros), axis=(len(video.shape)-1)) 
-    #retina_output = np.concatenate((vp2, vm2, vzeros), axis=(len(video.shape)-1)) 
-    retina_output = np.concatenate((vp4, vm4, vzeros), axis=(len(video.shape)-1)) 
+    #retina_output = np.concatenate((vp3, vp3, vm3), axis=(len(video.shape)-1)) 
 
     # save retina output of video
-    #retina_output = retina(video, args.alpha, args.mu_on, args.mu_off)
-    #retina_output = retina2(video, args.alpha, args.mu_on, args.mu_off)
+    #start = timer()
+    retina_output = retina(video, args.alpha, args.mu_on, args.mu_off)
+    #off, on = retina2(video, args.alpha, args.mu_on, args.mu_off)
+    #end = timer()
+    #print('EDR elapsed time: ', end - start)
+    #retina_output = np.concatenate((off, on), axis=len(video.shape)-1)
 
     #print retina_output.shape
     print('retina_output shape',retina_output.shape)
@@ -178,9 +182,10 @@ def make_retina_output(args):
     # put on channel on red, off channel on green
     #RCL color assignments were flipped, on is green, off is red.
     #Below, B color channel is added (with default value 0) by padding
-    #retina_output = np.squeeze(np.pad(retina_output,
-    #    [(0, 0) for i in range(len(retina_output.shape) - 1)] + [(0, 1)],
-    #     mode='constant'))
+    retina_output = np.squeeze(np.pad(retina_output,
+        [(0, 0) for i in range(len(retina_output.shape) - 1)] + [(0, 1)],
+         mode='constant'))
+    print('retina_output shape after adding third (B) color channel',retina_output.shape)
     #retina_output = np.squeeze(retina_output)
 
     # write retina output to file
