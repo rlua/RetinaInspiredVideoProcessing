@@ -36,3 +36,5 @@ the locations of videos are in the file `files.txt`
 input videos and results are in example_videos under `/home/rhonald/agethen2/dense-flow/example_videos`)
 
 We kept a spreadsheet to compare the performance of different retinally-inspired video transformations together with the commandline arguments passed to the i3d scripts (which were run with CUDA on beast3.bdc.bcm.edu): https://docs.google.com/spreadsheets/d/1S2Qb1E3a6jRwpmNY7_TuHdeCRzgPuqV4pldVhNZSK6k/edit?ts=5b326def#gid=1130522074
+
+BTW, we had been using tmux sessions to run one or more of these video recognition experiments.
