@@ -17,6 +17,22 @@ To create a Reichardt correlator of a video side-by-side with the original video
 python ReichardtTest_retina_convert.py --input_path="example_videos/v_Archery_g01_c01.avi" --out_path="Test_ReichardtDiagonal2.mov"
 ```
 
+(The Reichardt demo uses the call:
+```
+def Reichardt8(video):
+    '''
+       Returns a tuple of Reichardt-Hassenstein correlators in 8 directions
+    '''
+    vp1, vm1 = Reichardt_vertical_2channels_Vectorized(video) #Directions 1, -1
+    vp3, vm3 = Reichardt_horizontal_2channels_Vectorized(video) #Directions 3, -3
+    vp2, vm2 = Reichardt_diagonal1_2channels_Vectorized(video) #Directions 2, -2
+    vp4, vm4 = Reichardt_diagonal2_2channels_Vectorized(video) #Directions 4, -4
+
+return vp1, vm1, vp2, vm2, vp3, vm3, vp4, vm4
+```
+The first diagonal direction (2,-2) corresponds to the SE direction, while the second diagonal direction (4,-4) corresponds to the SW direction, where the convention for the positive y-direction is downwards.
+)
+
 Siddharth has a repo on a pytorch implementation of I3D for UCF-101 video action recognition that has options for pre-processing with Optical Flow (OF), EDR or Reichardt: https://github.com/smittal6/i3d
 
 On beast3, my experiments on i3d are under `/home/rhonald/Retina/i3d`
@@ -44,3 +60,5 @@ For what accuracy to expect, when training with initial weights from scratch:
 ![Single Stream I3D on UCF-101](figures/Scratch_singlestream_screen_shot_2019-02-28_at_11.40.00_pm.png)
 
 ![Two Stream I3D on UCF-101](figures/Scratch_twostream_screen_shot_2019-02-28_at_11.39.49_pm.png)
+
+Optical Flow has better accuracy than either EDR or Reichardt, but one thing we would like to understand better is how to get the accuracy of EDR or Reichardt to be closer to that of OF when not starting from scratch and fine-tuning the network weights.
