@@ -38,3 +38,9 @@ input videos and results are in example_videos under `/home/rhonald/agethen2/den
 We kept a spreadsheet to compare the performance of different retinally-inspired video transformations together with the commandline arguments passed to the i3d scripts (which were run with CUDA on beast3.bdc.bcm.edu): https://docs.google.com/spreadsheets/d/1S2Qb1E3a6jRwpmNY7_TuHdeCRzgPuqV4pldVhNZSK6k/edit?ts=5b326def#gid=1130522074
 
 BTW, we had been using tmux sessions to run one or more of these video recognition experiments.
+
+For what accuracy to expect, when training with initial weights from scratch:
+
+![Single Stream I3D on UCF-101](figures/Scratch_singlestream_screen_shot_2019-02-28_at_11.40.00_pm.png)
+
+![Two Stream I3D on UCF-101](figures/Scratch_twostream_screen_shot_2019-02-28_at_11.39.49_pm.png)
