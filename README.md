@@ -62,3 +62,4 @@ For what accuracy to expect, when training with initial weights from scratch:
 ![Two Stream I3D on UCF-101](figures/Scratch_twostream_screen_shot_2019-02-28_at_11.39.49_pm.png)
 
 Optical Flow has better accuracy than either EDR or Reichardt, but one thing we would like to understand better is how to get the accuracy of EDR or Reichardt to be closer to that of OF when not starting from scratch and fine-tuning the network weights.
+Also, is Reichardt consistently better than EDR on other video datasets, or is Reichardt accurate across different action classes within UCF-101?
